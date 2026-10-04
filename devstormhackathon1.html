@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Household Carbon Footprint Calculator</title>
+
+    
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🌱 Household Carbon Footprint</h1>
+
+    <p class="subtitle">
+        Answer a few questions to estimate your household's monthly carbon footprint.
+    </p>
+
+
+    <!-- TRAVEL -->
+
+    <div class="card">
+
+        <h2>🚗 Travel work</h2>
+
+        <div class="question">
+            <label for="carKm">Car travel per month (km)</label>
+            <input type="number" id="carKm" min="0" value="0">
+        </div>
+
+        <div class="question">
+            <label for="bikeKm">Two-wheeler travel per month (km)</label>
+            <input type="number" id="bikeKm" min="0" value="0">
+        </div>
+
+        <div class="question">
+            <label for="publicKm">Public transport per month (km)</label>
+            <input type="number" id="publicKm" min="0" value="0">
+        </div>
+
+        <div class="question">
+            <label for="flights">Flights per month</label>
+            <input type="number" id="flights" min="0" value="0">
+        </div>
+
+    </div>
+
+
+    <!-- ELECTRICITY -->
+
+    <div class="card">
+
+        <h2>⚡ Electricity</h2>
+
+        <div class="question">
+            <label for="electricity">
+                Monthly electricity usage (kWh)
+            </label>
+
+            <input
+                type="number"
+                id="electricity"
+                min="0"
+                value="150"
+            >
+        </div>
+
+    </div>
+
+
+    <!-- HOUSEHOLD -->
+
+    <div class="card">
+
+        <h2>🏠 Household</h2>
+
+        <div class="question">
+
+            <label for="people">
+                Number of people in household
+            </label>
+
+            <input
+                type="number"
+                id="people"
+                min="1"
+                value="4"
+            >
+
+        </div>
+
+
+        <div class="question">
+
+            <label for="lpg">
+                LPG cylinders used per month
+            </label>
+
+            <input
+                type="number"
+                id="lpg"
+                min="0"
+                value="1"
+            >
+
+        </div>
+
+
+        <div class="question">
+
+            <label for="recycling">
+                How often does your household recycle?
+            </label>
+
+            <select id="recycling">
+
+                <option value="low">
+                    Rarely
+                </option>
+
+                <option value="medium">
+                    Sometimes
+                </option>
+
+                <option value="high">
+                    Usually
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <!-- CALCULATE -->
+
+    <button id="calculateBtn">
+        Calculate Carbon Footprint
+    </button>
+
+
+    <!-- RESULT -->
+
+    <div class="card" id="result">
+
+        <h2>🌍 Your Monthly Result</h2>
+
+
+        <div class="total">
+
+            <div class="total-number" id="total">
+                0
+            </div>
+
+            <div class="unit">
+                kg CO₂e per month
+            </div>
+
+        </div>
+
+
+        <div class="breakdown">
+
+            <div class="breakdown-box">
+
+                🚗 Travel
+
+                <strong id="travelResult">
+                    0
+                </strong>
+
+                kg
+
+            </div>
+
+
+            <div class="breakdown-box">
+
+                ⚡ Electricity
+
+                <strong id="electricityResult">
+                    0
+                </strong>
+
+                kg
+
+            </div>
+
+
+            <div class="breakdown-box">
+
+                🏠 Household
+
+                <strong id="householdResult">
+                    0
+                </strong>
+
+                kg
+
+            </div>
+
+        </div>
+
+
+        <h2>
+            💡 Three Reduction Concepts
+        </h2>
+
+
+        <div id="concepts"></div>
+
+
+        <h2>
+            🌱 Reduction Tips
+        </h2>
+
+
+        <div id="tips"></div>
+
+
+        <button
+            class="reset"
+            id="resetBtn"
+        >
+            Calculate Again
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const calculateBtn =
+        document.getElementById("calculateBtn");
+
+    const resetBtn =
+        document.getElementById("resetBtn");
+
+
+    calculateBtn.addEventListener("click", function () {
+
+        // Get travel inputs
+
+        const carKm =
+            Number(document.getElementById("carKm").value) || 0;
+
+        const bikeKm =
+            Number(document.getElementById("bikeKm").value) || 0;
+
+        const publicKm =
+            Number(document.getElementById("publicKm").value) || 0;
+
+        const flights =
+            Number(document.getElementById("flights").value) || 0;
+
+
+        // Get electricity
+
+        const electricity =
+            Number(document.getElementById("electricity").value) || 0;
+
+
+        // Get household information
+
+        const people =
+            Number(document.getElementById("people").value) || 1;
+
+        const lpg =
+            Number(document.getElementById("lpg").value) || 0;
+
+        const recycling =
+            document.getElementById("recycling").value;
+
+
+        /*
+            Simplified educational emission factors.
+
+            These are NOT an official carbon audit.
+        */
+
+
+        // Travel emissions
+
+        const carCO2 =
+            carKm * 0.17;
+
+        const bikeCO2 =
+            bikeKm * 0.08;
+
+        const publicCO2 =
+            publicKm * 0.05;
+
+        const flightCO2 =
+            flights * 250;
+
+
+        const travel =
+            carCO2 +
+            bikeCO2 +
+            publicCO2 +
+            flightCO2;
+
+
+        // Electricity emissions
+
+        const electricityCO2 =
+            electricity * 0.70;
+
+
+        // LPG emissions
+
+        const lpgCO2 =
+            lpg * 42;
+
+
+        // Recycling / waste estimate
+
+        let wasteCO2 = 0;
+
+
+        if (recycling === "low") {
+
+            wasteCO2 =
+                people * 15;
+
+        } else if (recycling === "medium") {
+
+            wasteCO2 =
+                people * 10;
+
+        } else {
+
+            wasteCO2 =
+                people * 5;
+
+        }
+
+
+        // Total household emissions
+
+        const household =
+            lpgCO2 +
+            wasteCO2;
+
+
+        const total =
+            travel +
+            electricityCO2 +
+            household;
+
+
+        // Display results
+
+        document.getElementById("total").textContent =
+            total.toFixed(1);
+
+        document.getElementById("travelResult").textContent =
+            travel.toFixed(1);
+
+        document.getElementById("electricityResult").textContent =
+            electricityCO2.toFixed(1);
+
+        document.getElementById("householdResult").textContent =
+            household.toFixed(1);
+
+
+        // Find largest emission categories
+
+        const categories = [
+
+            {
+                name: "Travel",
+                value: travel
+            },
+
+            {
+                name: "Electricity",
+                value: electricityCO2
+            },
+
+            {
+                name: "Household",
+                value: household
+            }
+
+        ];
+
+
+        categories.sort(function (a, b) {
+
+            return b.value - a.value;
+
+        });
+
+
+        // Three concepts
+
+        const conceptData = {
+
+            Travel: {
+                title: "🚗 Lower-Carbon Travel",
+                text: "Use public transport, walking, cycling or carpooling when practical. Combine multiple trips into one journey."
+            },
+
+            Electricity: {
+                title: "⚡ Energy Efficiency",
+                text: "Reduce unnecessary electricity use, switch to LED lighting and choose efficient appliances."
+            },
+
+            Household: {
+                title: "♻️ Smarter Household Consumption",
+                text: "Reduce waste, reuse products and recycle materials to lower household emissions."
+            }
+
+        };
+
+
+        let conceptsHTML = "";
+
+
+        categories.forEach(function (category, index) {
+
+            const concept =
+                conceptData[category.name];
+
+
+            conceptsHTML += `
+
+                <div class="concept">
+
+                    <h3>
+                        ${index + 1}. ${concept.title}
+                    </h3>
+
+                    <p>
+                        ${concept.text}
+                    </p>
+
+                </div>
+
+            `;
+
+        });
+
+
+        document.getElementById("concepts").innerHTML =
+            conceptsHTML;
+
+
+        // Personalized tips
+
+        let tipsHTML = "";
+
+
+        if (travel >= electricityCO2 &&
+            travel >= household) {
+
+            tipsHTML += `
+                <div class="tip">
+                    🚶 Replace some short vehicle trips with walking or cycling.
+                </div>
+
+                <div class="tip">
+                    🚌 Use public transport for regular journeys when possible.
+                </div>
+
+                <div class="tip">
+                    🚗 Combine errands to reduce unnecessary trips.
+                </div>
+            `;
+
+        } else if (electricityCO2 >= travel &&
+                   electricityCO2 >= household) {
+
+            tipsHTML += `
+                <div class="tip">
+                    💡 Replace old bulbs with LED lighting.
+                </div>
+
+                <div class="tip">
+                    🔌 Switch off appliances when they are not needed.
+                </div>
+
+                <div class="tip">
+                    ☀️ Consider renewable electricity options where available.
+                </div>
+            `;
+
+        } else {
+
+            tipsHTML += `
+                <div class="tip">
+                    ♻️ Separate recyclable materials from general waste.
+                </div>
+
+                <div class="tip">
+                    🍽️ Plan meals to reduce food waste.
+                </div>
+
+                <div class="tip">
+                    🔄 Reuse or repair items before buying replacements.
+                </div>
+            `;
+
+        }
+
+
+        tipsHTML += `
+
+            <div class="tip">
+                🌱 Make one small carbon-saving change each week.
+            </div>
+
+        `;
+
+
+        document.getElementById("tips").innerHTML =
+            tipsHTML;
+
+
+        // Show result
+
+        document.getElementById("result").style.display =
+            "block";
+
+
+        document.getElementById("result").scrollIntoView({
+            behavior: "smooth"
+        });
+
+    });
+
+
+    // Reset
+
+    resetBtn.addEventListener("click", function () {
+
+        location.reload();
+
+    });
+
+</script>
+
+</body>
+</html>
